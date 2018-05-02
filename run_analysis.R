@@ -51,7 +51,5 @@ all_data <- cbind(x_data, y_data, subject_data)
 # Step 5 - Create a second, independent tidy data set with the average of each variable
 ###############################################################################
 
-# 66 <- exclude 67 / 68 columns of last two (activity & subject)
-average_data <- ddply(all_data, .(subject_data, activity), function(x) colMeans(x[, 1:66]))
-
-write.table(average_data, "average_data.txt", row.name=FALSE)
+tidy_data <- d_cast(all_data, .(subject + activity ~ variable, mean))
+write.table(average_data, "tidy_data", "./tidy_data.txt")
