@@ -1,3 +1,5 @@
+install.packages("reshape2")
+library("reshape2")
 library(plyr)
 
 # Step 1 - Merge the training and test sets to create one data set
@@ -51,5 +53,31 @@ all_data <- cbind(x_data, y_data, subject_data)
 # Step 5 - Create a second, independent tidy data set with the average of each variable
 ###############################################################################
 
-tidy_data <- d_cast(all_data, .(subject + activity ~ variable, mean))
-write.table(average_data, "tidy_data", "./tidy_data.txt")
+tidy_data<- as.data.frame(lapply(all_data[,1:66],FUN = mean, rm.na = T))
+write.table(tidy_data, file = "tidy_data.txt")
+
+## Create second tidy_data - per suggestions
+tidy_data2<- as.data.frame(lapply(all_data[,1:66], FUN = array, rm.na = T))
+?lapply
+write.table(tidy_data2, file = "tidy_data2.txt")
+
+tidy_data <- run.data
+tidy_data <- run.data %>%
+  group_by(subject_data, activities) %>%
+  summarise_each(funs(mean))
+
+# Write run.data to file
+write.table(tidy_data, file="tidy_data.txt", row.name=FALSE)
+
+# Make Codebook
+getwd()
+remove.packages("reader")
+install.packages("reader")
+install.packages("NCmisc")
+library(knitr)
+library(reader)
+library(dplyr)
+
+knit("makeCodebook.Rmd", output = "codebook.md",quiet = TRUE)
+markdownToHTML("codebook.md", "codebook.html")
+
